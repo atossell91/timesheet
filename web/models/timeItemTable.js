@@ -17,13 +17,13 @@ export class timeItemTable {
         this.#view = new timeItemTableView();
         this.#timeEventManager = timeEventManager;
         this.addRow();
-        this.addRow();
     }
 
     addRow() {
         const row = new timeItemRow(this.#timeEventManager, this.#dateSerial, this.#responses);
         this.#rows.set(row, row);
         this.#view.refTableBody.append(row.viewRoot);
+        this.#timeEventManager.timeSlotAdded(row);
     }
 
     get viewRoot() {

@@ -5,7 +5,6 @@ import { formatDateISO } from "../services/Utilities.js";
 
 export class timeItem {
     #view;
-    #subitems = new Map();
     #timeEventManager;
     #dayData;
     #table;
@@ -43,14 +42,16 @@ export class timeItem {
             this.#dayData.lunchBreak = this.#view.refLunchBreak.value;
             this.#timeEventManager.dayInfoChanged();
         });
+
+        this.#view.refAddSlice.addEventListener("click", ()=>{
+            this.#table.addRow();
+        });
     }
 
     addTimeslice() {
     }
 
     removeTimeSlice(id) {
-        this.#subitems.delete(id);
-        this.#timeEventManager.timeSlotRemoved(id);
     }
 
     get dayData() {

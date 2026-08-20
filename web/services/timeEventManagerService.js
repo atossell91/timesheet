@@ -3,8 +3,13 @@ export class TimeEventHandlerService extends EventTarget {
         super();
     }
 
-    timeSlotInfoChanged() {
-        this.dispatchEvent(new CustomEvent("timeslotInfoChanged", {}))
+    timeSlotInfoChanged(data) {
+        let dataObj = { detail: {}}
+        for (const key in data) {
+            dataObj.detail[key] = data[key];
+        }
+
+        this.dispatchEvent(new CustomEvent("timeslotInfoChanged", dataObj));
     }
 
     dayInfoChanged() {

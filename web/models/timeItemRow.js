@@ -8,12 +8,6 @@ export class timeItemRow {
     #timeEventManager;
     #timeSlotData;
 
-    #dateComponent;
-    #startMins;
-    #startHour;
-    #endMins;
-    #endHour;
-
     constructor(timeEventManager, dateSerial, responses) {
         this.#view = new timeItemRowView();
         this.#timeEventManager = timeEventManager;
@@ -24,31 +18,30 @@ export class timeItemRow {
 
         this.#view.refStartHour.addEventListener("change", ()=>{
             this.#trySetStartDateTime();
-            this.#timeEventManager.timeSlotInfoChanged();
         });
 
         this.#view.refStartMinutes.addEventListener("change", ()=>{
             this.#trySetStartDateTime();
-            this.#timeEventManager.timeSlotInfoChanged();
         });
 
         this.#view.refEndHour.addEventListener("change", ()=>{
             this.#calcEndDate();
-            this.#timeEventManager.timeSlotInfoChanged();
         });
 
         this.#view.refEndMinutes.addEventListener("change", ()=>{
         this.#calcEndDate();
-            this.#timeEventManager.timeSlotInfoChanged();
         });
 
         this.#view.refResponse.addEventListener("change", ()=>{
-            this.#timeEventManager.timeSlotInfoChanged();
+            this.#timeEventManager.timeSlotInfoChanged({
+                object: this,
+                field: "response",
+                value: this.#view.refResponse.value
+            });
         });
 
         this.#view.refTimeSlotDate.addEventListener("change", ()=>{
             this.#trySetStartDateTime();
-            this.#timeEventManager.timeSlotInfoChanged();
         });
     }
 
@@ -64,14 +57,20 @@ export class timeItemRow {
     #trySetStartDateTime() {
         if (this.#view.refTimeSlotDate.value !== "" &&
             this.#view.refStartHour.value !== "" &&
-            this.#view.refStartMinutes.valeu !== "") {
+            this.#view.refStartMinutes.value !== "") {
                 const dateSerial = createDateSerial(
                     this.#view.refTimeSlotDate.value,
                     this.#view.refStartHour.value,
-                    this.#view.refEndMinutes.value
+                    this.#view.refStartMinutes.value
                 );
                 this.#timeSlotData.StartDateTimeSerial = dateSerial;
                 this.#calcEndDate();
+
+                this.#timeEventManager.timeSlotInfoChanged({
+                    object: this,
+                    field: "startTime",
+                    value: dateSerial
+                });
         }
     }
 
@@ -90,6 +89,12 @@ export class timeItemRow {
                 }
 
                 this.#timeSlotData.EndDateTimeSerial = dateSerial;
+
+                this.#timeEventManager.timeSlotInfoChanged({
+                    object: this,
+                    field: "endTime",
+                    value: dateSerial
+                });
         }
     }
 
