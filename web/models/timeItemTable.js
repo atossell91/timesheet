@@ -23,7 +23,10 @@ export class timeItemTable {
         const row = new timeItemRow(this.#timeEventManager, this.#dateSerial, this.#responses);
         this.#rows.set(row, row);
         this.#view.refTableBody.append(row.viewRoot);
-        this.#timeEventManager.timeSlotAdded(row);
+        this.#timeEventManager.uiTimeSlotAdded({
+            object: row,
+            value: row.timeSlotData
+        });
     }
 
     get viewRoot() {

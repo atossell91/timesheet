@@ -12,6 +12,8 @@ export class timeEntry {
         "PCN"
     ];
 
+    #timeSlots = new Map();
+
     constructor(timeEventManager) {
         this.#timeEventManager = timeEventManager;
 
@@ -20,26 +22,23 @@ export class timeEntry {
         const tempDate = new Date();
         this.#nextDate = Math.floor(new Date(tempDate.getFullYear(), tempDate.getMonth()+1, tempDate.getDate()));
 
-        this.addDay();
-
         this.#view.refAddTimeItem.addEventListener("click", ()=>{
             this.addDay();
         });
 
-        this.#timeEventManager.addEventListener("timeslotInfoChanged", (data)=>{
-            console.log("Row changed!");
-            console.log(data.detail)
-        })
+        this.#timeEventManager.addEventListener("uiTimeInfoChanged", (data)=>{
+            this.#timeSlots.get(data.detail.object).makeSameAs(data.detail.value);
+        });
 
-        this.#timeEventManager.addEventListener("timeslotAdded", (data)=>{
-            console.log("Row Added!");
-            console.log(data.detail)
-        })
+        this.#timeEventManager.addEventListener("uiTimeSlotAdded", (data)=>{
+            this.#timeSlots.set(data.detail.object, data.detail.value.clone());
+        });
 
-        this.#timeEventManager.addEventListener("timeslotRemoved", (data)=>{
-            console.log("Row Deleted!");
-            console.log(data.detail)
-        })
+        this.#timeEventManager.addEventListener("uiTimeSlotRemoved", (data)=>{
+            this.#timeSlots.delete(data.detail.object);
+        });
+
+        this.addDay();
     }
 
     addDay() {

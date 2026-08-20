@@ -1,6 +1,12 @@
 <!-- <link type="stylesheet" href="timeItemRow.css"/> -->
 <tr class="timeItemRow" data-name="id-root">
     <td>
+        <input type="date" data-name="id-timeSlotDate"/>
+    </td>
+    <td>
+        <select data-name="id-response"></select>
+    </td>
+    <td>
         <input type="number" min=0 max=24 placeholder="Enter start time" data-name="id-startHour"/>
     </td>
     <td>
@@ -23,10 +29,10 @@
         </select>
     </td>
     <td>
-        <select data-name="id-response"></select>
+        <input type="checkbox" data-name="id-lunchBreak"/>
     </td>
     <td>
-        <input type="date" data-name="id-timeSlotDate"/>
+        <input type="checkbox" data-name="id-lunchDelivered"/>
     </td>
     <td>
         <button data-name="id-deleteRow">DEL</button>

@@ -3,40 +3,48 @@ export class TimeEventHandlerService extends EventTarget {
         super();
     }
 
-    timeSlotInfoChanged(data) {
+    uiTimeInfoChanged(data) {
         let dataObj = { detail: {}}
         for (const key in data) {
             dataObj.detail[key] = data[key];
         }
 
-        this.dispatchEvent(new CustomEvent("timeslotInfoChanged", dataObj));
+        this.dispatchEvent(new CustomEvent("uiTimeInfoChanged", dataObj));
     }
 
-    dayInfoChanged() {
-        this.dispatchEvent(new CustomEvent("dayInfoChanged", {}))
+    uiTimeSlotAdded(data) {
+        let dataObj = { detail: {}}
+        for (const key in data) {
+            dataObj.detail[key] = data[key];
+        }
+
+        this.dispatchEvent(new CustomEvent("uiTimeSlotAdded", dataObj));
     }
 
-    timeSlotAdded(id) {
-        this.dispatchEvent(new CustomEvent("timeslotAdded", {
-            id: id
+    uiTimeSlotRemoved(id) {
+        this.dispatchEvent(new CustomEvent("uiTimeSlotRemoved", {
+            detail: { id: id }
         }));
     }
 
-    timeslotRemoved(id) {
-        this.dispatchEvent(new CustomEvent("timeslotRemoved", {
-            id: id
+    dataTimeInfoChanged(data) {
+        let dataObj = { detail: {}}
+        for (const key in data) {
+            dataObj.detail[key] = data[key];
+        }
+
+        this.dispatchEvent(new CustomEvent("dataTimeInfoChanged", dataObj));
+    }
+
+    dataTimeInfoAdded(id) {
+        this.dispatchEvent(new CustomEvent("dataTimeInfoAdded", {
+            detail: { id: id }
         }));
     }
 
-    dayAdded(id) {
-        this.dispatchEvent(new CustomEvent("dayAdded", {
-            id: id
-        }));
-    }
-
-    dayRemoved(id) {
-        this.dispatchEvent(new CustomEvent("dayRemoved", {
-            id: id
+    dataTimeInfoRemoved(id) {
+        this.dispatchEvent(new CustomEvent("dataTimeInfoRemoved", {
+            detail: { id: id }
         }));
     }
 }

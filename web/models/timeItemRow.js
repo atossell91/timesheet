@@ -29,19 +29,37 @@ export class timeItemRow {
         });
 
         this.#view.refEndMinutes.addEventListener("change", ()=>{
-        this.#calcEndDate();
+            this.#calcEndDate();
         });
 
         this.#view.refResponse.addEventListener("change", ()=>{
-            this.#timeEventManager.timeSlotInfoChanged({
+            this.#timeEventManager.uiTimeInfoChanged({
                 object: this,
                 field: "response",
-                value: this.#view.refResponse.value
+                value: this.#timeSlotData
             });
         });
 
         this.#view.refTimeSlotDate.addEventListener("change", ()=>{
             this.#trySetStartDateTime();
+        });
+
+        this.#view.refLunchBreak.addEventListener("change", ()=>{
+            this.#timeSlotData.LunchBreak = this.#view.refLunchBreak.checked;
+            this.#timeEventManager.uiTimeInfoChanged({
+                object: this,
+                field: "lunchBreak",
+                value: this.#timeSlotData
+            });
+        });
+
+        this.#view.refLunchDelivered.addEventListener("change", ()=>{
+            this.#timeSlotData.LunchDelivered = this.#view.refLunchDelivered.checked;
+            this.#timeEventManager.uiTimeInfoChanged({
+                object: this,
+                field: "lunchDelivered",
+                value: this.#timeSlotData
+            });
         });
     }
 
@@ -66,10 +84,10 @@ export class timeItemRow {
                 this.#timeSlotData.StartDateTimeSerial = dateSerial;
                 this.#calcEndDate();
 
-                this.#timeEventManager.timeSlotInfoChanged({
+                this.#timeEventManager.uiTimeInfoChanged({
                     object: this,
                     field: "startTime",
-                    value: dateSerial
+                    value: this.#timeSlotData
                 });
         }
     }
@@ -90,15 +108,19 @@ export class timeItemRow {
 
                 this.#timeSlotData.EndDateTimeSerial = dateSerial;
 
-                this.#timeEventManager.timeSlotInfoChanged({
+                this.#timeEventManager.uiTimeInfoChanged({
                     object: this,
                     field: "endTime",
-                    value: dateSerial
+                    value: this.#timeSlotData
                 });
         }
     }
 
     get viewRoot() {
         return this.#view.refRoot;
+    }
+
+    get timeSlotData() {
+        return this.#timeSlotData;
     }
 }

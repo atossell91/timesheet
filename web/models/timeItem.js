@@ -27,31 +27,11 @@ export class timeItem {
             this.#responses
         );
 
-        this.#view.refTimeSlices.append(this.#table.viewRoot);
-
-        this.#timeEventManager.addEventListener("timeslotInfoChanged", ()=>{
-            this.#timeEventManager.dayInfoChanged();
-        });
-
-        this.#view.refWorkDate.addEventListener("change", ()=>{
-            this.#dayData.date = this.#view.refWorkDate.value;
-            this.#timeEventManager.dayInfoChanged();
-        });
-
-        this.#view.refLunchBreak.addEventListener("change", ()=>{
-            this.#dayData.lunchBreak = this.#view.refLunchBreak.value;
-            this.#timeEventManager.dayInfoChanged();
-        });
-
         this.#view.refAddSlice.addEventListener("click", ()=>{
             this.#table.addRow();
-        });
-    }
+        })
 
-    addTimeslice() {
-    }
-
-    removeTimeSlice(id) {
+        this.#view.refTimeSlices.append(this.#table.viewRoot);
     }
 
     get dayData() {
