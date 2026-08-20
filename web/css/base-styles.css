@@ -1,0 +1,9 @@
+.horz {
+    display: flex;
+    flex-direction: row;
+}
+
+.vert {
+    display: flex;
+    flex-direction: column;
+}

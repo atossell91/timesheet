@@ -1,0 +1,1 @@
+export class timeEntryView {#root;constructor(){const e=[];e.push(document.createElement("div"));e[0].setAttribute("class","timeEntry");this.#root=e[0];}get refRoot(){return this.#root;}}
