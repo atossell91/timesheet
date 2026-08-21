@@ -1,7 +1,17 @@
 import { timeEntryView } from "../compiled-views/timeEntryView.js"
 import { timeItem } from "./timeItem.js"
-import { TimeSlotDataReadonly } from "../services/TimeSlotData.js";
-import { ReadOnlyLookup } from "../services/ReadOnlyLookup.js";
+
+class ReadOnlyLookup {
+    #data;
+    
+    constructor(data) {
+        this.#data = data;
+    }
+
+    get (index) {
+        return this.#data.get(index).clone();
+    }
+}
 
 export class timeEntry {
     #view;
@@ -14,6 +24,8 @@ export class timeEntry {
         "PCN"
     ];
 
+    #timeItems = new Map();
+
     #timeSlots = new Map();
     #readonlyLookup;
 
@@ -22,9 +34,7 @@ export class timeEntry {
 
         this.#view = new timeEntryView();
 
-        this.#readonlyLookup = new ReadOnlyLookup(this.#timeSlots, (data, index)=>{
-            return new TimeSlotDataReadonly(data.get(index));
-        })
+        this.#readonlyLookup = new ReadOnlyLookup(this.#timeSlots);
 
         const tempDate = new Date();
         this.#nextDate = Math.floor(new Date(tempDate.getFullYear(), tempDate.getMonth()+1, tempDate.getDate()));
@@ -34,23 +44,41 @@ export class timeEntry {
         });
 
         this.#timeEventManager.addEventListener("uiTimeInfoChanged", (data)=>{
-            this.#timeSlots.get(data.detail.object).makeSameAs(data.detail.value);
+            const dataObject = this.#timeSlots.get(data.detail.object);
+            dataObject.makeSameAs(data.detail.value);
+
+            this.#timeEventManager.dataTimeInfoChanged({ 
+                object: data.detail.object
+            }, false);
         });
 
         this.#timeEventManager.addEventListener("uiTimeSlotAdded", (data)=>{
             this.#timeSlots.set(data.detail.object, data.detail.value.clone());
+            
+            this.#timeEventManager.dataTimeInfoAdded({ 
+                object: data.detail.object
+            }, false);
         });
 
         this.#timeEventManager.addEventListener("uiTimeSlotRemoved", (data)=>{
-            this.#timeSlots.delete(data.detail.object);
+            const id = data.detail.id;
+            this.#timeSlots.delete(id);
+            this.#timeEventManager.dataTimeInfoRemoved(id, false);
         });
+
+        this.#timeEventManager.addEventListener("uiDayEmpty", (data)=>{
+            const dayId = data.detail.dayId;
+            const item = this.#timeItems.get(dayId);
+            this.#view.refTimeItems.removeChild(item.viewRoot);
+            this.#timeItems.delete(dayId);
+        })
 
         this.addDay();
     }
 
     addDay() {
         const day = new timeItem(this.#timeEventManager, this.#nextDate, this.#responses, this.#readonlyLookup);
-        this.#timeSlots.set(day, day);
+        this.#timeItems.set(day, day);
         this.#nextDate += 86400000;
         this.#view.refTimeItems.appendChild(day.viewRoot)
     }

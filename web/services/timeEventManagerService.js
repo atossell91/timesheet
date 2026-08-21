@@ -27,24 +27,39 @@ export class TimeEventHandlerService extends EventTarget {
         }));
     }
 
-    dataTimeInfoChanged(data) {
+    uiDayEmpty(dayId) {
+        this.dispatchEvent(new CustomEvent("uiDayEmpty", {
+            detail: {
+                dayId: dayId
+            }
+        }))
+    }
+
+    dataTimeInfoChanged(data, updateUI) {
         let dataObj = { detail: {}}
         for (const key in data) {
             dataObj.detail[key] = data[key];
         }
+        dataObj.detail["updateUI"] = updateUI;
 
         this.dispatchEvent(new CustomEvent("dataTimeInfoChanged", dataObj));
     }
 
-    dataTimeInfoAdded(id) {
+    dataTimeInfoAdded(id, updateUI) {
         this.dispatchEvent(new CustomEvent("dataTimeInfoAdded", {
-            detail: { id: id }
+            detail: { 
+                id: id,
+                updateUI: updateUI
+            }
         }));
     }
 
-    dataTimeInfoRemoved(id) {
+    dataTimeInfoRemoved(id, updateUI) {
         this.dispatchEvent(new CustomEvent("dataTimeInfoRemoved", {
-            detail: { id: id }
+            detail: { 
+                id: id,
+                updateUI: updateUI
+            }
         }));
     }
 }

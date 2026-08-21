@@ -13,6 +13,18 @@ export class timeItemRow {
         this.#timeEventManager = timeEventManager;
         this.#timeSlotData = new TimeSlotData();
 
+        this.#timeEventManager.addEventListener("dataTimeInfoChanged", (data)=>{
+            if (!data.detail.updateUI) return;
+        });
+
+        this.#timeEventManager.addEventListener("dataTimeInfoAdded", (data)=>{
+            if (!data.detail.updateUI) return;
+        });
+
+        this.#timeEventManager.addEventListener("dataTimeInfoRemoved", (data)=>{
+            if (!data.detail.updateUI) return;
+        });
+
         this.#view.refTimeSlotDate.value = formatDateISO(dateSerial);
         this.#setResponseOptions(responses);
 
@@ -61,6 +73,10 @@ export class timeItemRow {
                 value: this.#timeSlotData
             });
         });
+
+        this.#view.refDeleteRow.addEventListener("click", ()=>{
+            this.#timeEventManager.uiTimeSlotRemoved(this);
+        })
     }
 
     #setResponseOptions(responses) {
@@ -102,7 +118,7 @@ export class timeItemRow {
                     this.#view.refEndMinutes.value
                 );
 
-                if (dateSerial <= this.#timeSlotData.EndDateTimeSerial) {
+                if (dateSerial <= this.#timeSlotData.StartDateTimeSerial) {
                     dateSerial += 86400000;
                 }
 

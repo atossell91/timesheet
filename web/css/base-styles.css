@@ -7,3 +7,125 @@
     display: flex;
     flex-direction: column;
 }
+
+.hstretch {
+    width: 100%;
+}
+
+.vstretch {
+    height: 100%;
+}
+
+.horz-items {
+    display: flex;
+    flex-direction: row;
+}
+
+.horz-items * {
+    margin: 0.0rem 0.1rem 0.0rem 0.1rem;
+    padding: 0.1rem 0.3rem 0.1rem 0.3rem;
+}
+
+.line-bottom {
+    border-bottom: dashed 1px #00000044;
+}
+
+.time-area { 
+    margin-bottom: 3rem;
+}
+
+.timeItem {
+    background-color: lightblue;
+    margin-bottom: 1rem;
+    padding: 0.3rem;
+    border-radius: 0.5rem;
+    box-shadow: #00000099 0.3rem 0.3rem 0.5rem;
+}
+
+.top-panel {
+    padding-bottom: 0.1rem;
+}
+
+.right-panel {
+    width: 100%;
+    justify-content: right;
+}
+
+.right-panel > * {
+    box-shadow: inset #00000099 0.1rem 0.1rem 0.3rem;
+    background-color: lightgray;
+}
+
+.labelled-control {
+    border-radius: 0.8rem;
+}
+
+.labelled-control > div:first-child {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centers the blue box/text horizontally inside the red box */
+    height: 1.5rem;
+    white-space: nowrap;
+    width: fit-content;
+}
+
+.labelled-control > div:first-child > label {
+    text-align: center; /* Forces the text itself to center */
+}
+
+.labelled-control > div:last-child {
+    display: flex;          /* <-- THIS is what was missing */
+    justify-content: center; /* <-- THIS centers the checkbox/input horizontally */
+    align-items: center;
+    height: fit-content;
+    width: 2rem;
+}
+
+.labelled-control > div:last-child > * {
+    height: fit-content;
+}
+
+.timeItemRow {
+    display:contents;
+}
+
+.timeItemRow > * {
+    display:flex;
+    flex-direction: column;
+    justify-items: center;
+}
+
+.timeItemRow > * > * {
+    min-height: 2rem;
+    height: 100%;
+}
+
+.grid-time {
+    display: grid;
+    grid-template-columns: 8rem 5rem 3rem 4rem 3rem 4rem auto auto auto;
+    grid-row-gap: 0.5rem;
+    grid-column-gap: 0.25rem;
+}
+
+.grid-headers, .grid-rows {
+}
+
+.grid-rows > * {
+    padding-bottom: 10rem;
+}
+
+.grid-rows > *:last-child {
+    margin-bottom: 0rem;
+    background-color: aqua;
+}
+
+.grid-headers > * {
+    display: flex;
+    flex-direction: column;
+    justify-items: center;
+    text-align: center;
+}
+
+.grid-section {
+    margin-bottom: 1rem;
+}

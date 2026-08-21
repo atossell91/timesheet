@@ -1,40 +1,40 @@
 <!-- <link type="stylesheet" href="timeItemRow.css"/> -->
-<tr class="timeItemRow" data-name="id-root">
-    <td>
+<div class="timeItemRow" data-name="id-root">
+    <div>
         <input type="date" data-name="id-timeSlotDate"/>
-    </td>
-    <td>
+    </div>
+    <div>
         <select data-name="id-response"></select>
-    </td>
-    <td>
-        <input type="number" min=0 max=24 placeholder="Enter start time" data-name="id-startHour"/>
-    </td>
-    <td>
+    </div>
+    <div>
+        <input type="number" min=0 max=24 placeholder="08" data-name="id-startHour"/>
+    </div>
+    <div>
         <select data-name="id-startMinutes">
             <option value=0>00</option>
-            <option value=0>15</option>
-            <option value=0>30</option>
-            <option value=0>45</option>
+            <option value=15>15</option>
+            <option value=30>30</option>
+            <option value=45>45</option>
         </select>
-    </td>
-    <td>
-        <input type="number" min=0 max=24 placeholder="Enter end time" data-name="id-endHour"/>
-    </td>
-    <td>
+    </div>
+    <div>
+        <input type="number" min=0 max=24 placeholder="16" data-name="id-endHour"/>
+    </div>
+    <div>
         <select data-name="id-endMinutes">
             <option value=0>00</option>
-            <option value=0>15</option>
-            <option value=0>30</option>
-            <option value=0>45</option>
+            <option value=15>15</option>
+            <option value=30>30</option>
+            <option value=45>45</option>
         </select>
-    </td>
-    <td>
+    </div>
+    <div>
         <input type="checkbox" data-name="id-lunchBreak"/>
-    </td>
-    <td>
+    </div>
+    <div>
         <input type="checkbox" data-name="id-lunchDelivered"/>
-    </td>
-    <td>
+    </div>
+    <div>
         <button data-name="id-deleteRow">DEL</button>
-    </td>
-</tr>
+    </div>
+</div>
