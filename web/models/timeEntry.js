@@ -1,5 +1,7 @@
 import { timeEntryView } from "../compiled-views/timeEntryView.js"
 import { timeItem } from "./timeItem.js"
+import { TimeSlotDataReadonly } from "../services/TimeSlotData.js";
+import { ReadOnlyLookup } from "../services/ReadOnlyLookup.js";
 
 export class timeEntry {
     #view;
@@ -13,11 +15,16 @@ export class timeEntry {
     ];
 
     #timeSlots = new Map();
+    #readonlyLookup;
 
     constructor(timeEventManager) {
         this.#timeEventManager = timeEventManager;
 
         this.#view = new timeEntryView();
+
+        this.#readonlyLookup = new ReadOnlyLookup(this.#timeSlots, (data, index)=>{
+            return new TimeSlotDataReadonly(data.get(index));
+        })
 
         const tempDate = new Date();
         this.#nextDate = Math.floor(new Date(tempDate.getFullYear(), tempDate.getMonth()+1, tempDate.getDate()));
@@ -42,7 +49,8 @@ export class timeEntry {
     }
 
     addDay() {
-        const day = new timeItem(this.#timeEventManager, this.#nextDate, this.#responses);
+        const day = new timeItem(this.#timeEventManager, this.#nextDate, this.#responses, this.#readonlyLookup);
+        this.#timeSlots.set(day, day);
         this.#nextDate += 86400000;
         this.#view.refTimeItems.appendChild(day.viewRoot)
     }

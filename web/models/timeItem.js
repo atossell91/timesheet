@@ -1,19 +1,22 @@
 import { timeItemView } from "../compiled-views/timeItemView.js"
 import { DayData } from "../services/DayData.js";
-import { timeItemTable } from "./timeItemTable.js"
 import { formatDateISO } from "../services/Utilities.js";
+import { timeItemRow } from "./timeItemRow.js"
 
 export class timeItem {
     #view;
     #timeEventManager;
     #dayData;
-    #table;
     #dateSerial;
     #responses;
+    #lookupData;
 
-    constructor(timeEventManager, dateSerial, responses) {
+    #rows = new Map();
+
+    constructor(timeEventManager, dateSerial, responses, lookupData) {
         this.#dateSerial = dateSerial;
         this.#responses = responses;
+        this.#lookupData = lookupData;
 
         this.#view = new timeItemView();
         this.#dayData = new DayData();
@@ -21,17 +24,21 @@ export class timeItem {
 
         this.#view.refWorkDate.value = formatDateISO(dateSerial);
 
-        this.#table = new timeItemTable(
-            this.#timeEventManager,
-            this.#dateSerial,
-            this.#responses
-        );
-
         this.#view.refAddSlice.addEventListener("click", ()=>{
-            this.#table.addRow();
+            this.addRow();
         })
 
-        this.#view.refTimeSlices.append(this.#table.viewRoot);
+        this.addRow();
+    }
+
+    addRow() {
+        const row = new timeItemRow(this.#timeEventManager, this.#dateSerial, this.#responses);
+        this.#rows.set(row, row);
+        this.#view.refTableBody.append(row.viewRoot);
+        this.#timeEventManager.uiTimeSlotAdded({
+            object: row,
+            value: row.timeSlotData
+        });
     }
 
     get dayData() {
