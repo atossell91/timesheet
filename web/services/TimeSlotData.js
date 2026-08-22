@@ -27,31 +27,3 @@ export class TimeSlotData {
         this.LunchDelivered = other.LunchDelivered;
     }
 }
-
-export class TimeSlotDataReadonly {
-    #data;
-
-    constructor(timeSlotData) {
-        this.#data = timeSlotData;
-    }
-
-    get StartDateTimeSerial() {
-        return this.#data.StartDateTimeSerial;
-    }
-
-    get EndDateTimeSerial() {
-        return this.#data.EndDateTimeSerial;
-    }
-
-    get Response() {
-        return this.#data.Response;
-    }
-
-    get LunchBreak() {
-        return this.#data.LunchBreak;
-    }
-
-    get LunchDelivered() {
-        return this.#data.LunchDelivered;
-    }
-}

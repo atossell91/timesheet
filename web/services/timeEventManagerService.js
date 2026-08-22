@@ -35,31 +35,41 @@ export class TimeEventHandlerService extends EventTarget {
         }))
     }
 
-    dataTimeInfoChanged(data, updateUI) {
-        let dataObj = { detail: {}}
-        for (const key in data) {
-            dataObj.detail[key] = data[key];
-        }
-        dataObj.detail["updateUI"] = updateUI;
-
-        this.dispatchEvent(new CustomEvent("dataTimeInfoChanged", dataObj));
+    uiNewTimeEntryRequested(requestor) {
+        this.dispatchEvent(new CustomEvent("uiNewTimeEntryRequested", { detail: { requestor: requestor }}));
     }
 
-    dataTimeInfoAdded(id, updateUI) {
-        this.dispatchEvent(new CustomEvent("dataTimeInfoAdded", {
-            detail: { 
-                id: id,
-                updateUI: updateUI
-            }
-        }));
+    uiDataUpdateRequested(id, field, newData) {
+        this.dispatchEvent(new CustomEvent("uiRequestDataUpdate", { detail: {
+            id: id,
+            field: field,
+            newData: newData
+        }}))
     }
 
-    dataTimeInfoRemoved(id, updateUI) {
-        this.dispatchEvent(new CustomEvent("dataTimeInfoRemoved", {
-            detail: { 
-                id: id,
-                updateUI: updateUI
-            }
-        }));
+    uiDataRemoveRequested(id) {
+        this.dispatchEvent(new CustomEvent("uiDataRemoveRequested", { detail: {
+            id: id
+        }}));
+    }
+
+    dataAdded(newId, requestor=null) {
+        this.dispatchEvent(new CustomEvent("dataAdded", { detail: {
+            newId: newId,
+            requestor: requestor
+        }}));
+    }
+
+    dataChanged(id) {
+        this.dispatchEvent(new CustomEvent("dataChanged", { detail: {
+            id: id
+        }}));
+    }
+
+    dataRemoved(id, item) {
+        this.dispatchEvent(new CustomEvent("dataRemoved", { detail: {
+            oldId: id,
+            oldItem: item
+        }}));
     }
 }

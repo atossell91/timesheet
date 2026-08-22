@@ -1,5 +1,7 @@
 import { timeEntryView } from "../compiled-views/timeEntryView.js"
 import { timeItem } from "./timeItem.js"
+import { DataStoreService, ReadOnlyStoreService } from "../services/DataStoreService.js"
+import { TimeSlotData } from "../services/TimeSlotData.js";
 
 class ReadOnlyLookup {
     #data;
@@ -9,7 +11,7 @@ class ReadOnlyLookup {
     }
 
     get (index) {
-        return this.#data.get(index).clone();
+        return Object.freeze(this.#data.get(index).clone());
     }
 }
 
@@ -26,7 +28,7 @@ export class timeEntry {
 
     #timeItems = new Map();
 
-    #timeSlots = new Map();
+    #dataStore = new DataStoreService("timeSlotStore");
     #readonlyLookup;
 
     constructor(timeEventManager) {
@@ -34,36 +36,45 @@ export class timeEntry {
 
         this.#view = new timeEntryView();
 
-        this.#readonlyLookup = new ReadOnlyLookup(this.#timeSlots);
+        this.#readonlyLookup = new ReadOnlyStoreService(this.#dataStore);
 
         const tempDate = new Date();
         this.#nextDate = Math.floor(new Date(tempDate.getFullYear(), tempDate.getMonth()+1, tempDate.getDate()));
 
         this.#view.refAddTimeItem.addEventListener("click", ()=>{
             this.addDay();
+            //this.#timeEventManager.uiNewTimeEntryRequested(this);
         });
+
+        //this.#timeEventManager.addEventListener("dataAdded", (data)=>{
+        //    if (data.detail.requestor === this) {
+        //        this.addDay(data.detail.newId);
+        //    }
+        //});
 
         this.#timeEventManager.addEventListener("uiTimeInfoChanged", (data)=>{
-            const dataObject = this.#timeSlots.get(data.detail.object);
-            dataObject.makeSameAs(data.detail.value);
+            this.#dataStore.store(data.detail.dataId, data.detail.data);
 
-            this.#timeEventManager.dataTimeInfoChanged({ 
-                object: data.detail.object
-            }, false);
+            this.#timeEventManager.dataChanged(data.detail.dataId);
         });
 
-        this.#timeEventManager.addEventListener("uiTimeSlotAdded", (data)=>{
-            this.#timeSlots.set(data.detail.object, data.detail.value.clone());
+        this.#timeEventManager.addEventListener("uiDataRemoveRequested", (data)=>{
+            const id = data.detail.id;
+            const oldItem = this.#dataStore.remove(id);
+            this.#timeEventManager.dataRemoved(id, oldItem);
+        })
+
+        this.#timeEventManager.addEventListener("uiNewTimeEntryRequested", (data)=>{
+            const item = new TimeSlotData();
+            const id = this.#dataStore.add(item);
             
-            this.#timeEventManager.dataTimeInfoAdded({ 
-                object: data.detail.object
-            }, false);
+            this.#timeEventManager.dataAdded(id, data.detail.requestor);
         });
 
         this.#timeEventManager.addEventListener("uiTimeSlotRemoved", (data)=>{
-            const id = data.detail.id;
-            this.#timeSlots.delete(id);
-            this.#timeEventManager.dataTimeInfoRemoved(id, false);
+            const id = data.detail.dataId;
+            const item = this.#dataStore.remove(id);
+            this.#timeEventManager.dataRemoved(id, item);
         });
 
         this.#timeEventManager.addEventListener("uiDayEmpty", (data)=>{

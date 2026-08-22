@@ -25,48 +25,52 @@ export class timeItem {
         this.#view.refWorkDate.value = formatDateISO(dateSerial);
 
         this.#view.refAddSlice.addEventListener("click", ()=>{
-            this.addRow();
+            this.#timeEventManager.uiNewTimeEntryRequested(this);
         })
 
-        this.#timeEventManager.addEventListener("dataTimeInfoChanged", (data)=>{
-            if (this.#rows.has(data.detail.object)) {
+        // This might cause a stack overflow by triggering UiChanged -> dataChanged -> uiChanged etc...
+        this.#timeEventManager.addEventListener("dataChanged", (data)=>{
+            if (this.#rows.has(data.detail.id)) {
                 this.#calcTotalHours();
             }
         });
 
-        this.#timeEventManager.addEventListener("dataTimeInfoAdded", (data)=>{
-            const id = data.detail.object;
-            if (this.#rows.has(id)) {
-                this.#calcTotalHours();
+        this.#timeEventManager.addEventListener("dataAdded", (data)=>{
+            if (data.detail.requestor === null || data.detail.requestor !== this) return;
+
+            this.addRow(data.detail.newId);
+
+            this.#calcTotalHours();
+        });
+
+        this.#timeEventManager.addEventListener("dataRemoved", (data)=>{
+            if (!this.#rows.has(data.detail.oldId)) return; 
+
+            const row = this.#rows.get(data.detail.oldId);
+            
+            this.#view.refTableBody.removeChild(row.viewRoot);
+            this.#rows.delete(data.detail.oldId);
+            this.#calcTotalHours();
+
+            if (this.#rows.size < 1) {
+                this.#timeEventManager.uiDayEmpty(this)
             }
         });
 
-        this.#timeEventManager.addEventListener("dataTimeInfoRemoved", (data)=>{
-            const id = data.detail.id;
-            if (this.#rows.has(id)) {
-                this.#view.refTableBody.removeChild(id.viewRoot);
-                this.#rows.delete(id);
-                this.#calcTotalHours();
-
-                if (this.#rows.size < 1) {
-                    this.#timeEventManager.uiDayEmpty(this)
-                }
-            }
-        });
-
-        this.addRow();
+        this.#timeEventManager.uiNewTimeEntryRequested(this);
     }
 
     #sumHours() {
         let totalHours = 0.0
-        this.#rows.forEach((item)=>{
+
+        for (const item in this.#rows) {
             const data = this.#lookupData.get(item);
             let diff = data.EndDateTimeSerial - data.StartDateTimeSerial;
             if (data.LunchBreak) {
                 diff -= 1800000;
             }
             totalHours += diff;
-        })
+        }
         return totalHours;
     }
 
@@ -77,9 +81,9 @@ export class timeItem {
         this.#view.refRegularHours.innerText = Math.max(0, Math.min(hours, 7.5))
     }
 
-    addRow() {
-        const row = new timeItemRow(this.#timeEventManager, this.#dateSerial, this.#responses);
-        this.#rows.set(row, row);
+    addRow(rowId) {
+        const row = new timeItemRow(rowId, this.#lookupData, this.#timeEventManager, this.#dateSerial, this.#responses);
+        this.#rows.set(rowId, row);
         this.#view.refTableBody.append(row.viewRoot);
         this.#timeEventManager.uiTimeSlotAdded({
             object: row,
