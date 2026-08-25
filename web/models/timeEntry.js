@@ -52,10 +52,10 @@ export class timeEntry {
         //    }
         //});
 
-        this.#timeEventManager.addEventListener("uiTimeInfoChanged", (data)=>{
-            this.#dataStore.store(data.detail.dataId, data.detail.data);
+        this.#timeEventManager.addEventListener("uiDataUpdateRequested", (data)=>{
+            this.#dataStore.store(data.detail.id, data.detail.newData);
 
-            this.#timeEventManager.dataChanged(data.detail.dataId);
+            this.#timeEventManager.dataChanged(data.detail.id);
         });
 
         this.#timeEventManager.addEventListener("uiDataRemoveRequested", (data)=>{
@@ -84,7 +84,25 @@ export class timeEntry {
             this.#timeItems.delete(dayId);
         })
 
-        this.addDay();
+    }
+
+    load(dataArr) {
+        const dataDict = new Map();
+        for (const item of dataArr) {
+            if (!dataDict.has(item.WorkDateTimeSerial)) {
+                const tItem = new timeItem(
+                    this.#timeEventManager,
+                    item.WorkDateTimeSerial,
+                    this.#responses,
+                    this.#readonlyLookup);
+                this.#timeItems.set(tItem, tItem);
+                dataDict.set(item.WorkDateTimeSerial, tItem);
+                this.#view.refTimeItems.appendChild(tItem.viewRoot);
+            }
+
+            const dataId = this.#dataStore.add(item);
+            this.#timeEventManager.dataAdded(dataId, dataDict.get(item.WorkDateTimeSerial));
+        }
     }
 
     addDay() {

@@ -57,13 +57,13 @@ export class timeItem {
             }
         });
 
-        this.#timeEventManager.uiNewTimeEntryRequested(this);
+        //this.#timeEventManager.uiNewTimeEntryRequested(this);
     }
 
     #sumHours() {
         let totalHours = 0.0
 
-        for (const item in this.#rows) {
+        for (const item of this.#rows.keys()) {
             const data = this.#lookupData.get(item);
             let diff = data.EndDateTimeSerial - data.StartDateTimeSerial;
             if (data.LunchBreak) {
@@ -82,7 +82,7 @@ export class timeItem {
     }
 
     addRow(rowId) {
-        const row = new timeItemRow(rowId, this.#lookupData, this.#timeEventManager, this.#dateSerial, this.#responses);
+        const row = new timeItemRow(rowId, this.#lookupData, this.#timeEventManager, this.#responses);
         this.#rows.set(rowId, row);
         this.#view.refTableBody.append(row.viewRoot);
         this.#timeEventManager.uiTimeSlotAdded({

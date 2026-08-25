@@ -40,7 +40,7 @@ export class TimeEventHandlerService extends EventTarget {
     }
 
     uiDataUpdateRequested(id, field, newData) {
-        this.dispatchEvent(new CustomEvent("uiRequestDataUpdate", { detail: {
+        this.dispatchEvent(new CustomEvent("uiDataUpdateRequested", { detail: {
             id: id,
             field: field,
             newData: newData

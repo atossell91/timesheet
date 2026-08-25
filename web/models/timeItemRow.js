@@ -10,91 +10,49 @@ export class timeItemRow {
     #rowId;
     #lookupData;
 
-    #setSlotDate(dateSerial) {
-        this.#timeSlotData.StartDateTimeSerial = dateSerial;
-        this.#view.refTimeSlotDate.value = formatDateISO(dateSerial);
+    #hourFromSerial(serial) {
+        const dt = new Date(serial);
+        return dt.getHours();
     }
 
-    #setStartHour(dateSerial) {
-        const dt = new Date(dateSerial);
-        this.#timeSlotData.StartDateTimeSerial = dateSerial;
-        this.#view.refStartHour.value = dt.getHours();
+    #minutesFromSerial(serial) {
+        const dt = new Date(serial);
+        return dt.getMinutes();
     }
 
-    #setStartMinue(dateSerial) {
-        const dt = new Date(dateSerial);
-        this.#timeSlotData.StartDateTimeSerial = dateSerial;
-        this.#view.refStartMinutes.value = dt.getMinutes();
+    #dateFromSerial(serial) {
+        return formatDateISO(serial);
     }
 
-    #setStartDateTime(dateSerial) {
-        this.#timeSlotData.StartDateTimeSerial = dateSerial;
+    #updateUI() {
+        this.#view.refTimeSlotDate.value = formatDateISO(this.#timeSlotData.StartDateTimeSerial);
+        this.#view.refStartHour.value = this.#hourFromSerial(this.#timeSlotData.StartDateTimeSerial);
+        this.#view.refEndMinutes.value = this.#minutesFromSerial(this.#timeSlotData.StartDateTimeSerial);
 
-        const dt = new Date(dateSerial);
-        this.#view.refStartMinutes.value = dt.getMinutes();
-        this.#view.refStartHour.value = dt.getHours();
-        this.#view.refTimeSlotDate = formatDateISO(dateSerial);
+        this.#view.refEndHour.value = this.#hourFromSerial(this.#timeSlotData.EndDateTimeSerial);
+        this.#view.refEndMinutes.value = this.#minutesFromSerial(this.#timeSlotData.EndDateTimeSerial);
+
+        this.#view.refLunchBreak.checked = this.#timeSlotData.LunchBreak;
+        this.#view.refLunchDelivered.checked = this.#timeSlotData.LunchDelivered;
+
+        this.#view.refResponse.value = this.#timeSlotData.Response;
     }
 
-    #setEndDateTime(dateSerial) {
-        this.#timeSlotData.EndDateTimeSerial = dateSerial;
-
-        const dt = new Date(dateSerial);
-        this.#view.refEndMinutes.value = dt.getMinutes();
-        this.#view.refEndHour.value = dt.getHours();
-        this.#view.refTimeSlotDate = formatDateISO(dateSerial);
-    }
-
-    #setEndHour(dateSerial) {
-        const dt = new Date(dateSerial);
-        this.#timeSlotData.EndDateTimeSerial = dateSerial;
-        this.#view.refEndtHour.value = dt.getHours();
-    }
-
-    #setEndMinute(dateSerial) {
-        const dt = new Date(dateSerial);
-        this.#timeSlotData.EndDateTimeSerial = dateSerial;
-        this.#view.refEndMinutes.value = dt.getMinutes();
-    }
-
-    #setLunchBreak(lunch) {
-        this.#timeSlotData.LunchBreak = lunch;
-        this.#view.refLunchBreak.checked = lunch;
-    }
-
-    #setLunchDelivered(delivered) {
-        this.#timeSlotData.LunchDelivered;
-        this.#view.refLunchDelivered.checked = delivered;
-    }
-
-    #setResponse(response) {
-        this.#timeSlotData.Response;
-        this.#view.refResponse.value = response;
-    }
-
-    constructor(rowId, lookupData, timeEventManager, dateSerial, responses) {
+    constructor(rowId, lookupData, timeEventManager, responses) {
         this.#rowId = rowId;
         this.#lookupData = lookupData;
         this.#view = new timeItemRowView();
         this.#timeEventManager = timeEventManager;
-        this.#timeSlotData = new TimeSlotData();
+        this.#timeSlotData = this.#lookupData.get(this.#rowId).clone();
+
+        this.#setResponseOptions(responses);
+        this.#updateUI();
 
         this.#timeEventManager.addEventListener("dataChanged", (data)=>{
             if (data.detail.id !== this.#rowId) return;
 
-            this.#timeSlotData = this.#lookupData.get(id);
-
-            this.#setStartDateTime(this.#timeSlotData.StartDateTimeSerial);
-            this.#setEndDateTime(this.#timeSlotData.EndDateTimeSerial);
-
-            this.#setLunchBreak(this.#timeSlotData.LunchBreak);
-            this.#setLunchDelivered(this.#timeSlotData.LunchDelivered);
-
-            this.#setResponse(this.#timeSlotData.Response);
+            this.#updateUI();
         });
-
-        this.#view.refTimeSlotDate.value = formatDateISO(dateSerial);
-        this.#setResponseOptions(responses);
 
         this.#view.refStartHour.addEventListener("change", ()=>{
             this.#trySetStartDateTime();

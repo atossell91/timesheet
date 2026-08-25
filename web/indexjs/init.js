@@ -1,10 +1,10 @@
 import { App } from './app.js'
 
-function init() {
+async function init() {
     const app = new App();
-    // app.run();
+    await app.run();
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
     init();
 });
