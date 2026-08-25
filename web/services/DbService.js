@@ -1,3 +1,5 @@
+import { TimeSlotData } from "./TimeSlotData.js";
+
 export class DbService {
     static READ_ONLY = "readonly";
     static READ_WRITE = "readwrite";
@@ -29,37 +31,47 @@ export class DbService {
         this.#database = await DbService.promiseifyRequest(req);
     }
 
-    getObjectStore(mode, store=DEFAULT_STORE_NAME) {
+    getObjectStore(mode, store=DbService.DEFAULT_STORE_NAME) {
         const tx = this.#database.transaction(storeName, mode);
         return tx.objectStore(storeName);
     }
 
-    async add(object, store=DEFAULT_STORE_NAME) {
+    add(store=DbService.DEFAULT_STORE_NAME, object) {
         const tx = this.#database.transaction([store], DbService.READ_WRITE);
         const objectStore = tx.objectStore(store)
-        await DbService.promiseifyRequest(objectStore.add(object));
+        return DbService.promiseifyRequest(objectStore.add(object));
     }
 
-    async remove(store, key) {
+    remove(store, key) {
         const tx = this.#database.transaction([store], DbService.READ_WRITE);
         const objectStore = tx.objectStore(store)
-        await DbService.promiseifyRequest(objectStore.delete(key));
+        return DbService.promiseifyRequest(objectStore.delete(key));
     }
 
-    async get(store, key) {
+    get(store, key) {
         const tx = this.#database.transaction([store], DbService.READ_ONLY);
         const objectStore = tx.objectStore(store)
         return DbService.promiseifyRequest(objectStore.get(key));
     }
 
-    async put(store, data) {
+    put(store, data) {
         const tx = this.#database.transaction([store], DbService.READ_WRITE);
         const objectStore = tx.objectStore(store)
-        await DbService.promiseifyRequest(objectStore.put(data));
+        return DbService.promiseifyRequest(objectStore.put(data));
+    }
+
+    getCursor(store) {
+        const tx = this.#database.transaction([store]);
+        const objectStore = tx.objectStore(store);
+        return DbService.promiseifyRequest(objectStore.openCursor());
     }
 
     static async deleteDb(name) {
         const req = indexedDB.deleteDatabase(name)
-        await DbService.promiseifyRequest(req);
+        return DbService.promiseifyRequest(req);
+    }
+
+    async close() {
+        this.#database.close();
     }
 }

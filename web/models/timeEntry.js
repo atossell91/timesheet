@@ -23,7 +23,8 @@ export class timeEntry {
     #responses = [
         "HPAI",
         "TB",
-        "PCN"
+        "PCN",
+        "Substantive"
     ];
 
     #timeItems = new Map();
@@ -39,7 +40,7 @@ export class timeEntry {
         this.#readonlyLookup = new ReadOnlyStoreService(this.#dataStore);
 
         const tempDate = new Date();
-        this.#nextDate = Math.floor(new Date(tempDate.getFullYear(), tempDate.getMonth()+1, tempDate.getDate()));
+        this.#nextDate = Math.floor(new Date(tempDate.getFullYear(), tempDate.getMonth(), tempDate.getDate()));
 
         this.#view.refAddTimeItem.addEventListener("click", ()=>{
             this.addDay();
@@ -52,28 +53,38 @@ export class timeEntry {
         //    }
         //});
 
-        this.#timeEventManager.addEventListener("uiDataUpdateRequested", (data)=>{
-            this.#dataStore.store(data.detail.id, data.detail.newData);
+        this.#timeEventManager.addEventListener("uiDataUpdateRequested", async (data)=>{
+            await this.#dataStore.store(data.detail.id, data.detail.newData);
 
             this.#timeEventManager.dataChanged(data.detail.id);
+
+            const iter = await this.#dataStore.scan();
+            for await (let itm of iter) {
+                console.log(itm)
+            }
+            
         });
 
-        this.#timeEventManager.addEventListener("uiDataRemoveRequested", (data)=>{
+        this.#timeEventManager.addEventListener("uiDataRemoveRequested", async (data)=>{
             const id = data.detail.id;
-            const oldItem = this.#dataStore.remove(id);
+            const oldItem = await this.#dataStore.remove(id);
             this.#timeEventManager.dataRemoved(id, oldItem);
         })
 
-        this.#timeEventManager.addEventListener("uiNewTimeEntryRequested", (data)=>{
+        this.#timeEventManager.addEventListener("uiNewTimeEntryRequested", async (data)=>{
             const item = new TimeSlotData();
-            const id = this.#dataStore.add(item);
+            const requestor = data.detail.requestor;
+
+            item.WorkDateTimeSerial = requestor.dateSerial;
+
+            const id = await this.#dataStore.add(item);
             
-            this.#timeEventManager.dataAdded(id, data.detail.requestor);
+            this.#timeEventManager.dataAdded(id, requestor);
         });
 
-        this.#timeEventManager.addEventListener("uiTimeSlotRemoved", (data)=>{
+        this.#timeEventManager.addEventListener("uiTimeSlotRemoved", async (data)=>{
             const id = data.detail.dataId;
-            const item = this.#dataStore.remove(id);
+            const item = await this.#dataStore.remove(id);
             this.#timeEventManager.dataRemoved(id, item);
         });
 
@@ -83,10 +94,9 @@ export class timeEntry {
             this.#view.refTimeItems.removeChild(item.viewRoot);
             this.#timeItems.delete(dayId);
         })
-
     }
 
-    load(dataArr) {
+    async load(dataArr) {
         const dataDict = new Map();
         for (const item of dataArr) {
             if (!dataDict.has(item.WorkDateTimeSerial)) {
@@ -100,7 +110,7 @@ export class timeEntry {
                 this.#view.refTimeItems.appendChild(tItem.viewRoot);
             }
 
-            const dataId = this.#dataStore.add(item);
+            const dataId = await this.#dataStore.add(item);
             this.#timeEventManager.dataAdded(dataId, dataDict.get(item.WorkDateTimeSerial));
         }
     }

@@ -1,70 +1,68 @@
+import { DbService } from "./DbService.js";
+import { TimeSlotData } from "./TimeSlotData.js";
+
 export class DataStoreService {
-    #data = new Map();
-    #maxId = 0;
-    #itemFactory;
-    #storeName;
-    #timeEventManager = null;
+    #dbService;
+    static OBJECT_STORE = "timeSheetData";
+    static KEY_PATH = "key";
 
-    constructor(storeName) {
-        this.#storeName = storeName;
+    constructor() {
+        this.#dbService = new DbService("timeSheets", 1, (evt)=>{
+            const store = evt.currentTarget.result.createObjectStore(
+                DataStoreService.OBJECT_STORE, {
+                    keyPath: DataStoreService.KEY_PATH,
+                    autoIncrement: true
+            });
+
+            store.createIndex("dateIndex", "WorkDateTimeSerial", {
+                unique: false
+            });
+        });
     }
 
-    #calcMaxId() {
-        max = Number.MIN_VALUE;
-        this.#data.forEach((id)=>{
-            max = Math.max(max, id);
-        })
-        return max;
-    }
-
-    get storeName() {
-        return this.#storeName;
-    }
-
-    get(id) {
-        return this.#data.get(id).clone();
-    }
-
-    #getMuteable(id) {
-        return this.#data.get(id);
+    async get(id) {
+        await this.#dbService.open();
+        const res = await this.#dbService.get(DataStoreService.OBJECT_STORE, id);
+        const obj = TimeSlotData.fromObject(res);
+        return obj;
     }
 
     // Item must have a clone function
-    store(id, item) {
-        console.assert(this.#data.has(id), "ID does not exist in the data!!");
-        this.#data.set(id, item.clone());
+    async store(id, item) {
+        const obj = item.toObject();
+        obj[DataStoreService.KEY_PATH] = id;
+
+        await this.#dbService.open();
+        await this.#dbService.put(DataStoreService.OBJECT_STORE, obj);
+        this.#dbService.close();
     }
 
     // Item must have a clone function
-    add(item) {
-        ++this.#maxId;
-        this.#data.set(this.#maxId, item);
-        return this.#maxId;
+    async add(item) {
+        const obj = item.toObject();
+
+        await this.#dbService.open();
+        const res = await this.#dbService.add(DataStoreService.OBJECT_STORE, obj);
+        const id = res;
+
+        this.#dbService.close();
+       
+        return id;
     }
 
-    remove(id) {
-        const item = this.get(id);
-        this.#data.delete(id);
-        return item;
+    async remove(id) {
+        await this.#dbService.open();
+        this.#dbService.remove(DataStoreService.OBJECT_STORE, id);
+        this.#dbService.close();
     }
 
-    /* Assume data is in the form:
-     *  [
-     *    {
-     *      id: 1,
-     *      data: object
-     *    }, ...
-     *  ]
-    */
-    load(data) {
-        this.#maxId = Number.MIN_VALUE;
-        console.assert(this.#data.size < 1, "Data is already present!");
-        data.forEach((item)=>{
-            console.assert(!this.#data.has(item.id));
-
-            this.#maxId = Math.max(item.id, this.#maxId);
-            this.#data.set(item.id, item.data);
-        })
+    async *scan() {
+        await this.#dbService.open();
+        let cursor = await this.#dbService.getCursor(DataStoreService.OBJECT_STORE);
+        while(cursor) {
+            yield cursor.value;
+            cursor = cursor.continue();
+        }
     }
 }
 
@@ -74,7 +72,7 @@ export class ReadOnlyStoreService {
         this.#dataStoreService = dataStoreService
     }
 
-    get(id) {
-        return Object.freeze(this.#dataStoreService.get(id));
+    async get(id) {
+        return Object.freeze(await this.#dataStoreService.get(id));
     }
 }

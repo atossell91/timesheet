@@ -1,12 +1,10 @@
 import { timeItemView } from "../compiled-views/timeItemView.js"
-import { DayData } from "../services/DayData.js";
 import { formatDateISO } from "../services/Utilities.js";
 import { timeItemRow } from "./timeItemRow.js"
 
 export class timeItem {
     #view;
     #timeEventManager;
-    #dayData;
     #dateSerial;
     #responses;
     #lookupData;
@@ -19,7 +17,6 @@ export class timeItem {
         this.#lookupData = lookupData;
 
         this.#view = new timeItemView();
-        this.#dayData = new DayData();
         this.#timeEventManager = timeEventManager;
 
         this.#view.refWorkDate.value = formatDateISO(dateSerial);
@@ -60,11 +57,11 @@ export class timeItem {
         //this.#timeEventManager.uiNewTimeEntryRequested(this);
     }
 
-    #sumHours() {
+    async #sumHours() {
         let totalHours = 0.0
 
         for (const item of this.#rows.keys()) {
-            const data = this.#lookupData.get(item);
+            const data = await this.#lookupData.get(item);
             let diff = data.EndDateTimeSerial - data.StartDateTimeSerial;
             if (data.LunchBreak) {
                 diff -= 1800000;
@@ -74,8 +71,8 @@ export class timeItem {
         return totalHours;
     }
 
-    #calcTotalHours() {
-        const hours = this.#sumHours() / 3600000;
+    async #calcTotalHours() {
+        const hours = await this.#sumHours() / 3600000;
         this.#view.refTotalHours.innerText = Math.max(0, hours);
 
         this.#view.refRegularHours.innerText = Math.max(0, Math.min(hours, 7.5))
@@ -91,12 +88,12 @@ export class timeItem {
         });
     }
 
-    get dayData() {
-        return this.#dayData;
-    }
-
     get viewRoot() {
         return this.#view.refRoot;
+    }
+
+    get dateSerial() {
+        return this.#dateSerial;
     }
 
     set totalHours(hours) {

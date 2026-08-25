@@ -24,7 +24,7 @@ export class TimeSlotData {
     toObject() {
         return {
             WorkDateTimeSerial: this.WorkDateTimeSerial,
-            StartDateTimeSerisl: this.StartDateTimeSerisl,
+            StartDateTimeSerial: this.StartDateTimeSerial,
             EndDateTimeSerial: this.EndDateTimeSerial,
             Response: this.Response,
             LunchBreak: this.LunchBreak,
@@ -36,7 +36,7 @@ export class TimeSlotData {
         const data = new TimeSlotData();
 
         data.WorkDateTimeSerial = object["WorkDateTimeSerial"],
-        data.StartDateTimeSerisl = object["StartDateTimeSerisl"],
+        data.StartDateTimeSerial = object["StartDateTimeSerial"],
         data.EndDateTimeSerial = object["EndDateTimeSerial"],
         data.Response = object["Response"],
         data.LunchBreak = object["LunchBreak"],

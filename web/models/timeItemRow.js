@@ -25,9 +25,9 @@ export class timeItemRow {
     }
 
     #updateUI() {
-        this.#view.refTimeSlotDate.value = formatDateISO(this.#timeSlotData.StartDateTimeSerial);
+        this.#view.refTimeSlotDate.value = formatDateISO(this.#timeSlotData.WorkDateTimeSerial);
         this.#view.refStartHour.value = this.#hourFromSerial(this.#timeSlotData.StartDateTimeSerial);
-        this.#view.refEndMinutes.value = this.#minutesFromSerial(this.#timeSlotData.StartDateTimeSerial);
+        this.#view.refStartMinutes.value = this.#minutesFromSerial(this.#timeSlotData.StartDateTimeSerial);
 
         this.#view.refEndHour.value = this.#hourFromSerial(this.#timeSlotData.EndDateTimeSerial);
         this.#view.refEndMinutes.value = this.#minutesFromSerial(this.#timeSlotData.EndDateTimeSerial);
@@ -43,14 +43,15 @@ export class timeItemRow {
         this.#lookupData = lookupData;
         this.#view = new timeItemRowView();
         this.#timeEventManager = timeEventManager;
-        this.#timeSlotData = this.#lookupData.get(this.#rowId).clone();
+        this.#lookupData.get(this.#rowId).then((res)=>{
+            const data = res.clone();
+            this.#timeSlotData = data;
 
-        this.#setResponseOptions(responses);
-        this.#updateUI();
-
+            this.#setResponseOptions(responses);
+            this.#updateUI();
+        });
         this.#timeEventManager.addEventListener("dataChanged", (data)=>{
             if (data.detail.id !== this.#rowId) return;
-
             this.#updateUI();
         });
 
