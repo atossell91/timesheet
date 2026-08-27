@@ -58,10 +58,13 @@ export class DataStoreService {
 
     async *scan() {
         await this.#dbService.open();
-        let cursor = await this.#dbService.getCursor(DataStoreService.OBJECT_STORE);
-        while(cursor) {
-            yield cursor.value;
-            cursor = cursor.continue();
+        const iter = await this.#dbService.scan(DataStoreService.OBJECT_STORE);
+        for await (const item of iter) {
+            const data = TimeSlotData.fromObject(item);
+            yield {
+                id: item[DataStoreService.KEY_PATH],
+                data: data
+            };
         }
     }
 }

@@ -16,8 +16,6 @@ export class App {
     }
 
     async run() {
-        DbService.deleteDb("timeSheets");
-
         const time = new timeEntry(this.#timeEventManager);
 
         this.#root.appendChild(time.viewRoot);

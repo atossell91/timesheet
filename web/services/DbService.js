@@ -60,8 +60,17 @@ export class DbService {
         return DbService.promiseifyRequest(objectStore.put(data));
     }
 
-    getCursor(store) {
-        const tx = this.#database.transaction([store]);
+    async *scan(store) {
+        let cursor = await this.getCursor(store, DbService.READ_WRITE);
+        while(cursor) {
+            yield cursor.value;
+            cursor.continue();
+            cursor = await DbService.promiseifyRequest(cursor.request);
+        }
+    }
+
+    getCursor(store, mode) {
+        const tx = this.#database.transaction([store], mode);
         const objectStore = tx.objectStore(store);
         return DbService.promiseifyRequest(objectStore.openCursor());
     }
