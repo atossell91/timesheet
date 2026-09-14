@@ -3,6 +3,14 @@ export class TimeEventHandlerService extends EventTarget {
         super();
     }
 
+    uiDisplayChangeRequested(newViewName) {
+        this.dispatchEvent(new CustomEvent("uiDisplayChangeRequested", {
+            detail: {
+                newViewName: newViewName
+            }
+        }))
+    }
+
     uiTimeInfoChanged(data) {
         let dataObj = { detail: {}}
         for (const key in data) {

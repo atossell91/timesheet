@@ -11,3 +11,9 @@ export function formatDateISO(dateSerial) {
     const day = ("" + date.getDate()).padStart(2, 0);
     return `${year}-${month}-${day}`;
 }
+
+export function infanticide(parent) {
+    while (parent.lastChild) {
+        parent.removeChild(parent.lastChild);
+    }
+}
