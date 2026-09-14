@@ -1,12 +1,10 @@
-import { TimeSlotData } from "./TimeSlotData.js";
-
 export class DbService {
     static READ_ONLY = "readonly";
     static READ_WRITE = "readwrite";
 
     static DEFAULT_STORE_NAME = "_DEFAULT"
 
-    #database;
+    static staticDatabase;
 
     #dbName;
     #version;
@@ -28,35 +26,35 @@ export class DbService {
     async open() {
         const req = indexedDB.open(this.#dbName, this.#version);
         req.onupgradeneeded = this.#setupFunction;
-        this.#database = await DbService.promiseifyRequest(req);
+        DbService.staticDatabase = await DbService.promiseifyRequest(req);
     }
 
     getObjectStore(mode, store=DbService.DEFAULT_STORE_NAME) {
-        const tx = this.#database.transaction(storeName, mode);
+        const tx = DbService.staticDatabase.transaction(storeName, mode);
         return tx.objectStore(storeName);
     }
 
     add(store=DbService.DEFAULT_STORE_NAME, object) {
-        const tx = this.#database.transaction([store], DbService.READ_WRITE);
-        const objectStore = tx.objectStore(store)
+        const tx = DbService.staticDatabase.transaction([store], DbService.READ_WRITE);
+        const objectStore = tx.objectStore(store);
         return DbService.promiseifyRequest(objectStore.add(object));
     }
 
     remove(store, key) {
-        const tx = this.#database.transaction([store], DbService.READ_WRITE);
-        const objectStore = tx.objectStore(store)
+        const tx = DbService.staticDatabase.transaction([store], DbService.READ_WRITE);
+        const objectStore = tx.objectStore(store);
         return DbService.promiseifyRequest(objectStore.delete(key));
     }
 
     get(store, key) {
-        const tx = this.#database.transaction([store], DbService.READ_ONLY);
-        const objectStore = tx.objectStore(store)
+        const tx = DbService.staticDatabase.transaction([store], DbService.READ_ONLY);
+        const objectStore = tx.objectStore(store);
         return DbService.promiseifyRequest(objectStore.get(key));
     }
 
     put(store, data) {
-        const tx = this.#database.transaction([store], DbService.READ_WRITE);
-        const objectStore = tx.objectStore(store)
+        const tx = DbService.staticDatabase.transaction([store], DbService.READ_WRITE);
+        const objectStore = tx.objectStore(store);
         return DbService.promiseifyRequest(objectStore.put(data));
     }
 
@@ -70,7 +68,7 @@ export class DbService {
     }
 
     getCursor(store, mode) {
-        const tx = this.#database.transaction([store], mode);
+        const tx = DbService.staticDatabase.transaction([store], mode);
         const objectStore = tx.objectStore(store);
         return DbService.promiseifyRequest(objectStore.openCursor());
     }
@@ -81,6 +79,6 @@ export class DbService {
     }
 
     async close() {
-        this.#database.close();
+        DbService.staticDatabase.close();
     }
 }

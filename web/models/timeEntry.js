@@ -12,7 +12,6 @@ export class timeEntry {
 
     #timeItems = new Map();
 
-    //#dataStore = new DataStoreService("timeSlotStore");
     #readonlyLookup;
 
     constructor(timeEventManager, responses, readonlyLookup) {
@@ -25,8 +24,6 @@ export class timeEntry {
 
         const tempDate = new Date();
         this.#nextDate = Math.floor(new Date(tempDate.getFullYear(), tempDate.getMonth(), tempDate.getUTCDate()));
-
-        this.load(this.#dataStore);
 
         this.#view.refAddTimeItem.addEventListener("click", ()=>{
             const day = this.addDay();
@@ -63,7 +60,7 @@ export class timeEntry {
     }
 
     addDay() {
-        const nextDate = this.#getNextDate();
+        const nextDate = this.#nextDate;
         const day = new timeItem(this.#timeEventManager, nextDate, this.#responses, this.#readonlyLookup);
         this.#timeItems.set(day, day);
         this.#nextDate += 86400000;

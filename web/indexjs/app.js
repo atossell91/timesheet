@@ -6,6 +6,7 @@ import { TimeSlotData } from "../services/TimeSlotData.js";
 import { DbService } from "../services/DbService.js";
 import { infanticide } from "../services/Utilities.js";
 import { DataStoreService, ReadOnlyStoreService } from "../services/DataStoreService.js";
+import { preferences } from "../models/preferences.js"
 
 export class App {
     #responses = [
@@ -60,9 +61,11 @@ export class App {
     async run() {
         const menu = new mainMenu(this.#timeEventManager);
         const time = new timeEntry(this.#timeEventManager, this.#responses, new ReadOnlyStoreService(this.#dataStore));
+        const prefs = new preferences();
 
         this.#views.set("mainMenu", menu);
         this.#views.set("addMultiple", time);
+        this.#views.set("userPreferences", prefs);
 
         this.#root.appendChild(menu.viewRoot);
 

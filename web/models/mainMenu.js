@@ -11,6 +11,10 @@ export class mainMenu {
         this.#view.refAddMultiple.addEventListener("click", ()=>{
             this.#timeEventManager.uiDisplayChangeRequested("addMultiple");
         })
+
+        this.#view.refUserPreferences.addEventListener("click", ()=>{
+            this.#timeEventManager.uiDisplayChangeRequested("userPreferences");
+        })
     }
 
     get viewRoot() {

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="16"
+   height="16"
+   viewBox="0 0 16 16"
+   version="1.1"
+   id="svg1"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="px">
+    <inkscape:page
+       x="0"
+       y="0"
+       width="16"
+       height="16"
+       id="page2"
+       margin="0"
+       bleed="0" />
+  </sodipodi:namedview>
+  <defs
+     id="defs1">
+    <filter
+       style="color-interpolation-filters:sRGB"
+       inkscape:label="Drop Shadow"
+       id="filter27"
+       x="-0.12274487"
+       y="-0.090641255"
+       width="1.2100826"
+       height="1.218029">
+      <feFlood
+         result="flood"
+         in="SourceGraphic"
+         flood-opacity="0.200000"
+         flood-color="rgb(0,0,0)"
+         id="feFlood26" />
+      <feGaussianBlur
+         result="blur"
+         in="SourceGraphic"
+         stdDeviation="0.100000"
+         id="feGaussianBlur26" />
+      <feOffset
+         result="offset"
+         in="blur"
+         dx="-0.300000"
+         dy="0.300000"
+         id="feOffset26" />
+      <feComposite
+         result="comp1"
+         operator="in"
+         in="flood"
+         in2="offset"
+         id="feComposite26" />
+      <feComposite
+         result="comp2"
+         operator="over"
+         in="SourceGraphic"
+         in2="comp1"
+         id="feComposite27" />
+    </filter>
+  </defs>
+  <g
+     inkscape:label="Page"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="fill:#faf9dc;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none"
+       id="rect1"
+       width="10.904704"
+       height="13.780457"
+       x="1.6405309"
+       y="1.1387213"
+       ry="1"
+       inkscape:label="paper" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="Clock">
+    <ellipse
+       style="fill:#cbd6e1;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;filter:url(#filter27)"
+       id="path1"
+       ry="4.0820265"
+       rx="4.2364297"
+       cy="9.6791315"
+       cx="10.721351"
+       inkscape:label="body" />
+    <path
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none"
+       d="M 10.721351,9.7659832 V 6.7744271"
+       id="path3"
+       sodipodi:nodetypes="cc"
+       inkscape:label="minuteHand" />
+    <path
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none"
+       d="m 10.711701,9.8817857 1.466827,-0.617612"
+       id="path4"
+       inkscape:label="hourHand" />
+  </g>
+</svg>
