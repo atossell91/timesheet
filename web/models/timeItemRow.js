@@ -1,7 +1,6 @@
 import { timeItemRowView } from "../compiled-views/timeItemRowView.js"
 import { TimeSlotData } from "../services/TimeSlotData.js"
-import { createDateSerial } from "../services/Utilities.js";
-import { formatDateISO } from "../services/Utilities.js";
+import { createDateSerial, formatUTCDateISO, formatLocalDateISO } from "../services/Utilities.js";
 
 export class timeItemRow {
     #view;
@@ -21,11 +20,11 @@ export class timeItemRow {
     }
 
     #dateFromSerial(serial) {
-        return formatDateISO(serial);
+        return formatUTCDateISO(serial);
     }
 
     #updateUI() {
-        this.#view.refTimeSlotDate.value = formatDateISO(this.#timeSlotData.WorkDateTimeSerial);
+        this.#view.refTimeSlotDate.value = formatLocalDateISO(this.#timeSlotData.WorkDateTimeSerial);
         this.#view.refStartHour.value = this.#hourFromSerial(this.#timeSlotData.StartDateTimeSerial);
         this.#view.refStartMinutes.value = this.#minutesFromSerial(this.#timeSlotData.StartDateTimeSerial);
 

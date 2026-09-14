@@ -4,7 +4,15 @@ export function createDateSerial(dateStr, hour, min) {
     return Math.floor(date);
 }
 
-export function formatDateISO(dateSerial) {
+export function formatUTCDateISO(dateSerial) {
+    const date = new Date(dateSerial);
+    const year = ("" + date.getUTCFullYear()).padStart(4, 0);
+    const month = ("" + (date.getUTCMonth()+1)).padStart(2, 0);
+    const day = ("" + date.getUTCDate()).padStart(2, 0);
+    return `${year}-${month}-${day}`;
+}
+
+export function formatLocalDateISO(dateSerial) {
     const date = new Date(dateSerial);
     const year = ("" + date.getFullYear()).padStart(4, 0);
     const month = ("" + (date.getMonth()+1)).padStart(2, 0);

@@ -61,10 +61,10 @@ export class DataStoreService {
         const iter = await this.#dbService.scan(DataStoreService.OBJECT_STORE);
         for await (const item of iter) {
             const data = TimeSlotData.fromObject(item);
-            yield {
-                id: item[DataStoreService.KEY_PATH],
-                data: data
-            };
+            const object = {}
+            object[DataStoreService.KEY_PATH] = item[DataStoreService.KEY_PATH],
+            object["data"] = data;
+            yield object;
         }
     }
 }

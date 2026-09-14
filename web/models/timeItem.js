@@ -1,5 +1,5 @@
 import { timeItemView } from "../compiled-views/timeItemView.js"
-import { formatDateISO } from "../services/Utilities.js";
+import { formatUTCDateISO } from "../services/Utilities.js";
 import { timeItemRow } from "./timeItemRow.js"
 
 export class timeItem {
@@ -19,11 +19,17 @@ export class timeItem {
         this.#view = new timeItemView();
         this.#timeEventManager = timeEventManager;
 
-        this.#view.refWorkDate.value = formatDateISO(dateSerial);
+        this.#view.refWorkDate.value = formatUTCDateISO(dateSerial);
 
         this.#view.refAddSlice.addEventListener("click", ()=>{
-            this.#timeEventManager.uiNewTimeEntryRequested(this);
+            this.#leah().then((time)=>{
+                this.#timeEventManager.uiNewTimeEntryRequested(this, time);
+            })
         })
+
+        this.#view.refWorkDate.addEventListener("change", ()=>{
+            this.#dateSerial = Math.floor(new Date(this.#view.refWorkDate.value));
+        });
 
         // This might cause a stack overflow by triggering UiChanged -> dataChanged -> uiChanged etc...
         this.#timeEventManager.addEventListener("dataChanged", (data)=>{
@@ -55,6 +61,15 @@ export class timeItem {
         });
 
         //this.#timeEventManager.uiNewTimeEntryRequested(this);
+    }
+
+    async #leah() {
+        let maxEnd = Number.MIN_VALUE;
+        for (const rowId of this.#rows.keys()) {
+            const rowData = await this.#lookupData.get(rowId);
+            maxEnd = Math.max(maxEnd, rowData.EndDateTimeSerial);
+        }
+        return maxEnd;
     }
 
     async #sumHours() {

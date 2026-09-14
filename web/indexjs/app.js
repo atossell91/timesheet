@@ -1,8 +1,6 @@
 //import statements here!
 import { timeEntry } from "../models/timeEntry.js";
 import { TimeEventHandlerService } from "../services/timeEventManagerService.js"
-import { TimeSlotData } from "../services/TimeSlotData.js";
-import { DbService } from "../services/DbService.js";
 
 export class App {
 
@@ -16,6 +14,10 @@ export class App {
     }
 
     async run() {
+        navigator.storage.persist().then((res)=>{
+            console.log(`Browser persistence is ${res}`);
+        });
+        
         const time = new timeEntry(this.#timeEventManager);
 
         this.#root.appendChild(time.viewRoot);

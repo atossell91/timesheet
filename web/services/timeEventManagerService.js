@@ -35,8 +35,8 @@ export class TimeEventHandlerService extends EventTarget {
         }))
     }
 
-    uiNewTimeEntryRequested(requestor) {
-        this.dispatchEvent(new CustomEvent("uiNewTimeEntryRequested", { detail: { requestor: requestor }}));
+    uiNewTimeEntryRequested(requestor, suggestedStart) {
+        this.dispatchEvent(new CustomEvent("uiNewTimeEntryRequested", { detail: { requestor: requestor, suggestedStart: suggestedStart }}));
     }
 
     uiDataUpdateRequested(id, field, newData) {
